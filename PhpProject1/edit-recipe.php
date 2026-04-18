@@ -15,11 +15,10 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $userID = $_SESSION['userID'];
 $recipeID = (int)$_GET['id'];
 
-/* get recipe info and make sure it belongs to the loggedin user */
+/* get recipe info and make sure it belongs to the logged-in user */
 $sql = "SELECT id, name, description, categoryID, photoFileName, videoFilePath
         FROM Recipe
         WHERE id = ? AND userID = ?";
-
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "ii", $recipeID, $userID);
 mysqli_stmt_execute($stmt);
@@ -41,7 +40,6 @@ $ingredients = [];
 $ingSQL = "SELECT ingredientName, ingredientQuantity
            FROM Ingredients
            WHERE recipeID = ?";
-
 $ingStmt = mysqli_prepare($conn, $ingSQL);
 mysqli_stmt_bind_param($ingStmt, "i", $recipeID);
 mysqli_stmt_execute($ingStmt);
@@ -57,7 +55,6 @@ $stepSQL = "SELECT step
             FROM Instructions
             WHERE recipeID = ?
             ORDER BY stepOrder ASC";
-
 $stepStmt = mysqli_prepare($conn, $stepSQL);
 mysqli_stmt_bind_param($stepStmt, "i", $recipeID);
 mysqli_stmt_execute($stepStmt);
@@ -79,18 +76,18 @@ while ($row = mysqli_fetch_assoc($stepResult)) {
 
 <?php require_once 'includes/header.php'; ?>
 
-<nav class="breadcrumb">
+    <nav class="breadcrumb">
     <div class="breadcrumb-container">
-        <span class="breadcrumb-item"><a href="index.php">Home</a></span>
-        <span class="breadcrumb-separator">›</span>
-        <span class="breadcrumb-item"><a href="user.php">User Dashboard</a></span>
-        <span class="breadcrumb-separator">›</span>
-        <span class="breadcrumb-item"><a href="Myrecipes.php">My Recipes</a></span>
-        <span class="breadcrumb-separator">›</span>
-        <span class="breadcrumb-item active">Edit Recipe</span>
+      <span class="breadcrumb-item"><a href="index.php">Home</a></span>
+      <span class="breadcrumb-separator">›</span>
+      <span class="breadcrumb-item"><a href="user.php">User Dashboard</a></span>
+      <span class="breadcrumb-separator">›</span>
+      <span class="breadcrumb-item"><a href="Myrecipes.php">My Recipes</a></span>
+      <span class="breadcrumb-separator">›</span>
+      <span class="breadcrumb-item active">Edit Recipe</span>
     </div>
-</nav>
-
+  </nav>
+    
 <div class="page-head">
     <h2>Edit Recipe</h2>
     <p class="small">Update your recipe information below.</p>
@@ -99,6 +96,7 @@ while ($row = mysqli_fetch_assoc($stepResult)) {
 <div class="page">
     <form action="process/update_recipe_process.php" method="POST" enctype="multipart/form-data">
         
+        <!-- hidden recipe id -->
         <input type="hidden" name="recipeID" value="<?php echo $recipe['id']; ?>">
 
         <label>Recipe Name *</label>

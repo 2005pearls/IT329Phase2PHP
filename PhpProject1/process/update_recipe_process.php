@@ -14,10 +14,10 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
 $userID = $_SESSION['userID'];
 
-$recipeID        = isset($_POST['recipeID']) ? (int)$_POST['recipeID'] : 0;
-$name            = trim($_POST['name'] ?? '');
-$description     = trim($_POST['description'] ?? '');
-$categoryID      = isset($_POST['categoryID']) ? (int)$_POST['categoryID'] : 0;
+$recipeID    = isset($_POST['recipeID']) ? (int)$_POST['recipeID'] : 0;
+$name        = trim($_POST['name'] ?? '');
+$description = trim($_POST['description'] ?? '');
+$categoryID  = isset($_POST['categoryID']) ? (int)$_POST['categoryID'] : 0;
 $ingredientNames = $_POST['ingredientName'] ?? [];
 $ingredientQtys  = $_POST['ingredientQty'] ?? [];
 $steps           = $_POST['step'] ?? [];
@@ -28,7 +28,7 @@ if ($recipeID <= 0 || $name === '' || $description === '' || $categoryID <= 0) {
     die("Invalid input.");
 }
 
-/* make sure the recipe belongs to this user */
+/* make sure recipe belongs to this user */
 $checkSQL = "SELECT photoFileName, videoFilePath
              FROM Recipe
              WHERE id = ? AND userID = ?";
@@ -60,13 +60,14 @@ if (!is_dir($videoFolder)) {
     mkdir($videoFolder, 0777, true);
 }
 
-/* replace old photo only if a new one is uploaded */
+/* PHOTO: replace old photo only if new one uploaded */
 if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
-    $photoTmp = $_FILES['photo']['tmp_name'];
+    $photoTmp  = $_FILES['photo']['tmp_name'];
     $photoName = time() . "_" . basename($_FILES['photo']['name']);
     $photoTarget = $imageFolder . $photoName;
 
     if (move_uploaded_file($photoTmp, $photoTarget)) {
+        /* delete old photo if exists */
         if (!empty($currentPhoto) && file_exists($imageFolder . $currentPhoto)) {
             unlink($imageFolder . $currentPhoto);
         }
@@ -75,17 +76,20 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
     }
 }
 
-/* video priority:
-   1. uploaded new video
-   2. new URL
-   3. keep old video
+/* VIDEO:
+   priority:
+   1) uploaded new video
+   2) new URL
+   3) keep old video
 */
 if (isset($_FILES['video']) && $_FILES['video']['error'] === 0) {
-    $videoTmp = $_FILES['video']['tmp_name'];
+    $videoTmp  = $_FILES['video']['tmp_name'];
     $videoName = time() . "_" . basename($_FILES['video']['name']);
     $videoTarget = $videoFolder . $videoName;
 
     if (move_uploaded_file($videoTmp, $videoTarget)) {
+
+        /* delete old local video only if old one was a local file */
         if (!empty($currentVideo) && !filter_var($currentVideo, FILTER_VALIDATE_URL)) {
             $oldVideoFile = "../" . $currentVideo;
             if (file_exists($oldVideoFile)) {
@@ -98,6 +102,8 @@ if (isset($_FILES['video']) && $_FILES['video']['error'] === 0) {
 
 } elseif ($videoURL !== '') {
     if (filter_var($videoURL, FILTER_VALIDATE_URL)) {
+
+        /* if old video was local file, remove it */
         if (!empty($currentVideo) && !filter_var($currentVideo, FILTER_VALIDATE_URL)) {
             $oldVideoFile = "../" . $currentVideo;
             if (file_exists($oldVideoFile)) {
@@ -109,7 +115,7 @@ if (isset($_FILES['video']) && $_FILES['video']['error'] === 0) {
     }
 }
 
-/* update main recipe data */
+/* update recipe main data */
 $updateSQL = "UPDATE Recipe
               SET name = ?, description = ?, categoryID = ?, photoFileName = ?, videoFilePath = ?
               WHERE id = ? AND userID = ?";
@@ -170,7 +176,7 @@ foreach ($steps as $stepText) {
     }
 }
 
-/* go back to My Recipes */
+/* redirect to my recipes page */
 header("Location: ../Myrecipes.php");
 exit();
 ?>
