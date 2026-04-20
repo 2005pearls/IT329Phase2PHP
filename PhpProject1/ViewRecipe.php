@@ -7,8 +7,9 @@ header("Pragma: no-cache");
 header("Expires: 0");
 require_once(__DIR__ . "/config/db.php");
  
+//check logged in
 if (!isset($_SESSION['userID'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
  

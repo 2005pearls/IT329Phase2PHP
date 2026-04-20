@@ -8,7 +8,7 @@ $email = $_POST['email'];
 $password = $_POST['password'];
 
 
-/* 1️⃣ Check if user is blocked */
+/* Check if user is blocked */
 
 $sql = "SELECT * FROM blockeduser WHERE emailAddress = ?";
 $stmt = mysqli_prepare($conn, $sql);
@@ -22,7 +22,7 @@ exit();
 }
 
 
-/* 2️⃣ Check if user exists */
+/*  Check if user exists */
 
 $sql = "SELECT * FROM user WHERE emailAddress = ?";
 $stmt = mysqli_prepare($conn, $sql);
@@ -38,7 +38,7 @@ exit();
 $user = mysqli_fetch_assoc($result);
 
 
-/* 3️⃣ Verify password */
+/*  Verify password */
 
 if(!password_verify($password, $user['password'])){
 header("Location: ../login.php?error=password");
@@ -46,13 +46,13 @@ exit();
 }
 
 
-/* 4️⃣ Login successful */
+/*  Login successful */
 
 $_SESSION['userID'] = $user['id'];
 $_SESSION['userType'] = $user['userType'];
 
 
-/* 5️⃣ Redirect based on user type */
+/*  Redirect based on user type */
 
 if($user['userType'] == "admin"){
 header("Location: ../admin.php");

@@ -9,7 +9,7 @@ $email = $_POST['email'];
 $password = $_POST['password'];
 
 
-// 1️⃣ check if email already exists in user table
+// check if email already exists in user table
 
 $sql = "SELECT * FROM user WHERE emailAddress = ?";
 $stmt = mysqli_prepare($conn, $sql);
@@ -23,7 +23,7 @@ exit();
 }
 
 
-// 2️⃣ check blocked users
+//  check blocked users
 
 $sql = "SELECT * FROM blockeduser WHERE emailAddress = ?";
 $stmt = mysqli_prepare($conn, $sql);
@@ -37,12 +37,12 @@ exit();
 }
 
 
-// 3️⃣ hash password
+//  hash password
 
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
 
-// 4️⃣ handle image upload
+//  handle image upload
 
 if(isset($_FILES['profile_image']) && $_FILES['profile_image']['name'] != ""){
 
@@ -60,7 +60,7 @@ $photoName = "default-user.jpg";
 }
 
 
-// 5️⃣ insert new user
+//  insert new user
 
 $sql = "INSERT INTO user
 (userType, firstName, lastName, emailAddress, password, photoFileName)
@@ -71,18 +71,18 @@ mysqli_stmt_bind_param($stmt, "sssss", $firstName, $lastName, $email, $hashedPas
 mysqli_stmt_execute($stmt);
 
 
-// 6️⃣ get inserted ID
+//  get inserted ID
 
 $userID = mysqli_insert_id($conn);
 
 
-// 7️⃣ create session
+//  create session
 
 $_SESSION['userID'] = $userID;
 $_SESSION['userType'] = "user";
 
 
-// 8️⃣ redirect
+//  redirect
 
 header("Location: ../user.php");
 exit();

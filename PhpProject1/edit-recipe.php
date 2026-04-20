@@ -2,8 +2,9 @@
 session_start();
 require_once("config/db.php");
 
+//check logged in
 if (!isset($_SESSION['userID'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 

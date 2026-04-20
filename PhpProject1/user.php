@@ -3,13 +3,13 @@
 session_start();
 require_once("config/db.php");
 
-// requirement 5 & 6a: check logged in
+//check logged in
 if (!isset($_SESSION['userID'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 
-// requirement 6a: check user type is "user", not admin
+//check user type is "user", not admin
 if ($_SESSION['userType'] != "user") {
     header("Location: login.php?error=notUser");
     exit();
@@ -17,7 +17,7 @@ if ($_SESSION['userType'] != "user") {
 
 $userID = $_SESSION['userID'];
 
-// requirement 6b: get user info from database
+//get user info from database
 $sql = "SELECT * FROM User WHERE id = ?";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $userID);
@@ -25,7 +25,7 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $user = mysqli_fetch_assoc($result);
 
-// requirement 6c: get total number of recipes for this user
+//get total number of recipes for this user
 $countSQL = "SELECT COUNT(*) AS totalRecipes FROM Recipe WHERE userID = ?";
 $countStmt = mysqli_prepare($conn, $countSQL);
 mysqli_stmt_bind_param($countStmt, "i", $userID);
@@ -34,7 +34,7 @@ $countResult = mysqli_stmt_get_result($countStmt);
 $countRow = mysqli_fetch_assoc($countResult);
 $totalRecipes = $countRow['totalRecipes'];
 
-// requirement 6c: get total number of likes for all recipes by this user
+// get total number of likes for all recipes by this user
 $likesSQL = "SELECT COUNT(Likes.userID) AS totalLikes
              FROM Likes
              JOIN Recipe ON Likes.recipeID = Recipe.id
@@ -46,7 +46,7 @@ $likesResult = mysqli_stmt_get_result($likesStmt);
 $likesRow = mysqli_fetch_assoc($likesResult);
 $totalLikes = $likesRow['totalLikes'];
 
-// requirement 6d: get all categories from the database for the filter form
+//get all categories from the database for the filter form
 $catSQL = "SELECT id, categoryName FROM RecipeCategory";
 $catResult = mysqli_query($conn, $catSQL);
 $categories = [];
@@ -54,7 +54,7 @@ while ($cat = mysqli_fetch_assoc($catResult)) {
     $categories[] = $cat;
 }
 
-// requirement 6d/6e: decide if GET or POST, then get recipes accordingly
+//decide if GET or POST, then get recipes accordingly
 if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['categoryID']) && $_POST['categoryID'] != "") {
     // POST with a specific category selected: filter by it
     $selectedCategoryID = $_POST['categoryID'];
@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['categoryID']) && $_POS
     $recipes = mysqli_query($conn, $recipeSQL);
 }
 
-// requirement 6f: get this user's favourite recipes from the database
+// get this user's favourite recipes from the database
 $favSQL = "SELECT Recipe.id, Recipe.name, Recipe.photoFileName
            FROM Favourites
            JOIN Recipe ON Favourites.recipeID = Recipe.id
@@ -123,13 +123,13 @@ $favourites = mysqli_stmt_get_result($favStmt);
 
 <div class="container">
 
-  <!-- requirement 6b: welcome note with user's first name from database -->
+  <!-- welcome note with user's first name from database -->
   <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
     <div class="welcome">Welcome <?php echo $user['firstName']; ?>!</div>
     <a href="process/logout.php" class="link">Sign out</a>
   </div>
 
-  <!-- requirement 6b: user information and photo from database -->
+  <!--  user information and photo from database -->
   <div class="card grid">
 
     <?php if (!empty($user['photoFileName'])) { ?>
@@ -154,7 +154,7 @@ $favourites = mysqli_stmt_get_result($favStmt);
     </div>
   </div>
 
-  <!-- requirement 6c: link to my recipes, show total recipes and total likes from database -->
+  <!-- link to my recipes, show total recipes and total likes from database -->
   <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
     <a href="Myrecipes.php" class="btn btn-primary">My Recipes</a>
     <div class="muted">
@@ -164,11 +164,11 @@ $favourites = mysqli_stmt_get_result($favStmt);
     </div>
   </div>
 
-  <!-- requirement 6d + 6e: filter form and recipe table -->
+  <!-- filter form and recipe table -->
   <div class="card">
     <div class="section-title">All Available Recipes</div>
 
-    <!-- requirement 6d: filter form — sends POST to same page (user.php) -->
+    <!-- filter form — sends POST to same page (user.php) -->
     <form method="POST" action="user.php" style="display:flex; gap:12px; margin-bottom:1rem;">
       <select name="categoryID">
         <!-- "All Categories" has value="" and is selectable — handled in PHP below -->
@@ -183,10 +183,10 @@ $favourites = mysqli_stmt_get_result($favStmt);
       <button type="submit" class="btn btn-primary">Filter</button>
     </form>
 
-    <!-- requirement 6e: recipes table -->
+    <!-- recipes table -->
     <?php if (mysqli_num_rows($recipes) == 0) { ?>
 
-      <!-- requirement 6e: no recipes message when filter returns nothing -->
+      <!--  no recipes message when filter returns nothing -->
       <p style="text-align:center; padding:2rem; color:#a0a0a0;">
         No recipes found in this category.
       </p>
@@ -207,7 +207,7 @@ $favourites = mysqli_stmt_get_result($favStmt);
 
           <?php while ($recipe = mysqli_fetch_assoc($recipes)) { ?>
             <tr>
-              <!-- requirement 6e: recipe name is a code-generated link to ViewRecipe.php with the recipe id -->
+              <!--  recipe name is a code-generated link to ViewRecipe.php with the recipe id -->
               <td>
                 <a href="ViewRecipe.php?id=<?php echo $recipe['id']; ?>">
                   <?php echo $recipe['name']; ?>
@@ -229,7 +229,7 @@ $favourites = mysqli_stmt_get_result($favStmt);
                 </div>
               </td>
 
-              <!-- requirement 6e: total likes counted from the database -->
+              <!--  total likes counted from the database -->
               <td><?php echo $recipe['totalLikes']; ?></td>
 
               <td><?php echo $recipe['categoryName']; ?></td>
@@ -242,13 +242,13 @@ $favourites = mysqli_stmt_get_result($favStmt);
     <?php } ?>
   </div>
 
-  <!-- requirement 6f: favourites from the database -->
+  <!-- favourites from the database -->
   <div class="card">
     <div class="section-title">My Favourite Recipes</div>
 
     <?php if (mysqli_num_rows($favourites) == 0) { ?>
 
-      <!-- requirement 6f: message when no favourites -->
+      <!--  message when no favourites -->
       <p style="text-align:center; padding:2rem; color:#a0a0a0;">
         You have no favourite recipes yet.
       </p>
@@ -267,7 +267,7 @@ $favourites = mysqli_stmt_get_result($favStmt);
 
           <?php while ($fav = mysqli_fetch_assoc($favourites)) { ?>
             <tr>
-              <!-- requirement 6f: recipe name is a code-generated link to ViewRecipe.php -->
+              <!-- recipe name is a code-generated link to ViewRecipe.php -->
               <td>
                 <a href="ViewRecipe.php?id=<?php echo $fav['id']; ?>">
                   <?php echo $fav['name']; ?>
@@ -282,7 +282,7 @@ $favourites = mysqli_stmt_get_result($favStmt);
                 <?php } ?>
               </td>
 
-              <!-- requirement 6f: remove link goes to a PHP page that deletes from favourites -->
+              <!-- remove link goes to a PHP page that deletes from favourites -->
               <td>
                 <a href="process/remove_favourite.php?recipeID=<?php echo $fav['id']; ?>"
                    style="color:red;"
