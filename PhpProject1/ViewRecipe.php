@@ -13,7 +13,7 @@ if (!isset($_SESSION['userID'])) {
     exit();
 }
  
-// ── 10a. Check recipe ID from query string ────────────────────────────────────
+//  Check recipe ID from query string
 $recipeID      = intval($_GET['id'] ?? 0);
 $currentUserID = $_SESSION['userID'];
 $userType      = $_SESSION['userType'];
@@ -23,7 +23,7 @@ if ($recipeID === 0) {
     exit();
 }
  
-// ── 10b. Get recipe info + creator ────────────────────────────────────────────
+//  Get recipe info + creator 
 $stmt = mysqli_prepare($conn, "
     SELECT 
         r.id, r.userID AS creatorID, r.name, r.description,
@@ -45,7 +45,7 @@ if (!$recipe) {
     exit();
 }
 
-// ── Get ingredients, instructions, comments ───────────────────────────────────
+//Get ingredients, instructions, comments 
 $ingResult = mysqli_query($conn, "SELECT * FROM ingredients WHERE recipeID = $recipeID");
 $insResult = mysqli_query($conn, "SELECT * FROM instructions WHERE recipeID = $recipeID ORDER BY id ASC");
 $comResult = mysqli_query($conn, "
@@ -54,11 +54,11 @@ $comResult = mysqli_query($conn, "
     WHERE c.recipeID = $recipeID ORDER BY c.date DESC
 ");
  
-// ── Like count ────────────────────────────────────────────────────────────────
+// Like count 
 $likeCountRow = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) AS cnt FROM likes WHERE recipeID = $recipeID"));
 $likeCount = $likeCountRow['cnt'];
  
-// ── 10d. Check status for current user ───────────────────────────────────────
+//  Check status for current user 
 $isCreator = ($recipe['creatorID'] == $currentUserID);
 $isAdmin   = ($userType == 'admin');
 
@@ -110,7 +110,7 @@ $creatorName = $recipe['firstName'] . ' ' . $recipe['lastName'];
   </nav>
 <main class="recipe-card">
  
-     <!-- 10d. Action Buttons — only shown if viewer is not creator and not admin -->
+     <!--  Action Buttons — only shown if viewer is not creator and not admin -->
     <?php if (!$isCreator && !$isAdmin): ?>
     <div class="actions">
  

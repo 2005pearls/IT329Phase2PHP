@@ -2,13 +2,13 @@
 session_start();
 require_once("../config/db.php");
  
-// ── Only admins ───────────────────────────────────────────────────────────────
+// ── Only admins 
 if (!isset($_SESSION['userID']) || $_SESSION['userType'] != "admin") {
     header("Location: ../login.php?error=Access+denied.");
     exit();
 }
  
-// ── Collect POST data ─────────────────────────────────────────────────────────
+// ── Collect POST data
 $recipeID  = intval($_POST['recipeID']  ?? 0);
 $creatorID = intval($_POST['creatorID'] ?? 0);
 $reportID  = intval($_POST['reportID']  ?? 0);
@@ -19,7 +19,7 @@ if ($recipeID === 0 || $reportID === 0) {
     exit();
 }
  
-// ── If action = block ─────────────────────────────────────────────────────────
+// ── If action = block 
 if ($action === 'block' && $creatorID > 0) {
  
     // 1. Get creator info before deleting
@@ -87,7 +87,7 @@ if ($action === 'block' && $creatorID > 0) {
     mysqli_stmt_close($delU);
  
 } else {
-    // ── action = dismiss: just delete the report ──────────────────────────────
+    // ── action = dismiss: just delete the report 
     $delRep = mysqli_prepare($conn, "DELETE FROM report WHERE id = ?");
     mysqli_stmt_bind_param($delRep, "i", $reportID);
     mysqli_stmt_execute($delRep);
@@ -96,7 +96,7 @@ if ($action === 'block' && $creatorID > 0) {
  
 mysqli_close($conn);
  
-// ── Redirect back to admin page ───────────────────────────────────────────────
+// ── Redirect back to admin page
 header("Location: ../admin.php");
 exit();
 ?>

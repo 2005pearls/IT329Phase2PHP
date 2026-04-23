@@ -16,7 +16,7 @@ if ($recipeID === 0) {
     exit();
 }
  
-// ── Add Comment ───────────────────────────────────────────────────────────────
+// ── Add Comment 
 if ($action === 'comment') {
     $comment = trim($_POST['comment'] ?? '');
     if ($comment !== '') {
@@ -27,7 +27,7 @@ if ($action === 'comment') {
     }
 }
  
-// ── Add Like ──────────────────────────────────────────────────────────────────
+// ── Add Like 
 elseif ($action === 'like') {
     $check = mysqli_prepare($conn, "SELECT 1 FROM likes WHERE userID = ? AND recipeID = ?");
     mysqli_stmt_bind_param($check, "ii", $userID, $recipeID);
@@ -43,7 +43,7 @@ elseif ($action === 'like') {
     }
 }
  
-// ── Add Favourite ─────────────────────────────────────────────────────────────
+// ── Add Favourite 
 elseif ($action === 'favourite') {
     $check = mysqli_prepare($conn, "SELECT 1 FROM favourites WHERE userID = ? AND recipeID = ?");
     mysqli_stmt_bind_param($check, "ii", $userID, $recipeID);
@@ -59,7 +59,7 @@ elseif ($action === 'favourite') {
     }
 }
  
-// ── Add Report ────────────────────────────────────────────────────────────────
+// ── Add Report
 elseif ($action === 'report') {
     $check = mysqli_prepare($conn, "SELECT 1 FROM report WHERE userID = ? AND recipeID = ?");
     mysqli_stmt_bind_param($check, "ii", $userID, $recipeID);
